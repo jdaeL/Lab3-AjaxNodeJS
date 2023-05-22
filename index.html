@@ -1,39 +1,19 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Markdown APP</title>
-
-    <script>
-        /* Interacciones con el servidor a fin de definir funciones/funcionalidades
-           para recuperar la lista de archivos, ver los markdown y crear nuevos
-           markdown sin refreshear la pag.
-        */
-
-
-
-
-
-
-
-    </script>
-  </head>
-
-  <body>
-    <h1>MARKDOWN APP</h1>
-
-    <h2>Lista de Archivos</h2>
-    <ul id="fileList"></ul>
-
-    <h2>Contenido de Archivos</h2>
-    <div id="fileContent"></div>
-
-    <h2>Crear Archivo Nuevo</h2>
-    <form id="createFileForm">
-      <label for="filenameInput">Nombre de Archivo:</label>
-      <input type="text" id="filenameInput" required /><br />
-      <label for="contentInput">Contenido:</label><br />
-      <textarea id="contentInput" rows="5" required></textarea><br />
-      <button type="submit">Crear Archivo</button>
+<head>
+    <title>Markdown a HTML</title>
+</head>
+<body>
+    <h1>Convertir Markdown a HTML y Guardar</h1>
+    <form id="markupForm">
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title"><br><br>
+        <label for="content">Contenido:</label><br>
+        <textarea id="content" rows="10" cols="50"></textarea><br><br>
+        <input type="submit" value="Convertir y Guardar">
     </form>
-  </body>
+    <div id="htmlCode"></div>
+    <div id="message"></div>
+    <script src="client.js"></script>
+</body>
 </html>
