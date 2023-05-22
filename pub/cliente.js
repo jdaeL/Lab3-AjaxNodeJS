@@ -1,5 +1,5 @@
 function recitar(title, content) {
-    const url = 'http://localhost:3000/'
+    const url = 'http://localhost:3000/';
     const data = {
         title: title,
         content: content
@@ -19,7 +19,7 @@ function recitar(title, content) {
             } else {
                 document.querySelector("#message").innerHTML = "<p>Error al guardar el archivo.</p>";
             }
-        })
+        });
 }
 
 
@@ -29,5 +29,29 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#markupForm').onsubmit = () => {
         recitar(title.value, content.value);
         return false;
+    };
+
+    function obtenerArchivos() {
+        fetch('http://localhost:3000/priv')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const archivos = data.files;
+                    const listaArchivos = document.querySelector('#listaArchivos');
+                    listaArchivos.innerHTML = ''; // Limpiar la lista antes de agregar los elementos
+                    archivos.forEach(archivo => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = archivo;
+                        listaArchivos.appendChild(listItem);
+                    });
+
+                    const ultimoArchivo = archivos[archivos.length - 1];
+                    const ultimoArchivoItem = document.createElement('li');
+                    ultimoArchivoItem.textContent = ultimoArchivo;
+                    listaArchivos.insertBefore(ultimoArchivoItem, listaArchivos.firstChild);
+                } else {
+                    console.log('Error al obtener el listado de archivos.');
+                }
+            });
     }
 })
