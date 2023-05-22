@@ -1,64 +1,78 @@
-// modulos
-const express = require('express');
-const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
-
-// specs - confi
+const express=require('express');
+const bodyParser = require('body-parser');
+const MarkdownIt = require('markdown-it');
 const app = express();
-const port = 3000;
+const md = new Markdownit();
 
+app.use(express.static('pub'));
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
+const privFolderPath = path.join(__dirname, 'priv');
 
-// rutas
-
-/* obtener lista de markdown disponibles */
-app.get('/api/files', (req, res) => {
-    fs.readdir('files', (err, files) => {
-        if (err) {
-          console.error(err);
-          res.status(500).json({ error: 'Internal server error' });
-        } else {
-          res.json({ files });
-        }
-      });
+app.listen(3000, () => {
+  console.log("Escuchando en: http://localhost:3000");
 });
 
-/* obtener contenido de markdown específico */
-app.get('/api/files/:filename', (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join('files', filename);
-    
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        res.json({ content: data });
-      }
-    });
+// ruta de inicio
+app.get('/', (req,res) => {
+  res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
-/*  crear nuevo markdown  */
-app.post('/api/files', (req, res) => {
-    const filename = req.body.filename;
-    const content = req.body.content;
-    const filePath = path.join('files', filename);
-  
-    fs.writeFile(filePath, content, err => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        res.json({ message: 'File created successfully' });
-      }
-    });
+// ruta para file list del directorio priv
+app.get('priv', (req,res) => {
+  fs.readdir(privFolderPath, (err, files) => {
+    if(err) {
+      console.error(err);
+      res.json({success: false});
+    }
+    else {
+      res.json({success: true});
+    }
+  })
 });
 
-// app.listen
-app.listen(port, () => {
-    console.log(`Server corriendo en el port ${port}`);
+// ruta para obtener contenido de un file markdown especifico
+app.get('/priv/:filename', (req,res) => {
+  let filename = req.params.filename;
+  let filePath = path.json(privFolderPath, filename + '.md');
+  fs.readFile(filePath, 'utf8', (err,data) => {
+    if (err) {
+      console.error(err);
+      res.json({success: false});
+    }
+    else {
+      let htmlText = md.render(data);
+      res.json({success: true, htmlText: htmlText });
+
+    }
+  })
+
+
+
 });
 
+
+// ruta para guardar markdown
+app.post('/', (req, res) => {
+  console.log(req, body);
+  let title = req.body.title;
+  let content = req.body.content;
+
+  let filepath = path.json.join(privateFolderPath, title + '.md');
+  fs = fs.writeFile(filepath, content, 'utf-8', (err) => {
+    if (err) {
+      console.error(err);
+      res.json({success: false});
+    }
+    else {
+      let htmlText = md.render(content);
+      res.json({success: true, htmlText: htmlText });
+
+    }
+  })
+})
