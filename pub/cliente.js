@@ -1,4 +1,15 @@
-//Función para mostrar el contenido del archivo
+function mostrarContenidoArchivo(filename) {
+    const url = `http://localhost:3000/priv/${filename}`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector("#htmlCode").innerHTML = data.htmlText;
+            } else {
+                console.error("Error al obtener el contenido del archivo.");
+            }
+        });
+}
 
 function guardarArchivo(title, content) {
     const url = 'http://localhost:3000/';
@@ -18,7 +29,7 @@ function guardarArchivo(title, content) {
         .then(data => {
             if (data.success) {
                 document.querySelector("#message").innerHTML = "<p>Archivo guardado exitosamente.</p>";
-                mostrarListadoArchivos(); 
+                mostrarListadoArchivos();
             } else {
                 document.querySelector("#message").innerHTML = "<p>Error al guardar el archivo.</p>";
             }
@@ -26,36 +37,31 @@ function guardarArchivo(title, content) {
 }
 
 function mostrarListadoArchivos() {
-    fetch('http://localhost:3000/priv')
+    const url = 'http://localhost:3000/priv';
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const archivos = data.files;
-                const listaArchivos = document.querySelector('#listaArchivos');
-                listaArchivos.innerHTML = ''; // Limpiar la lista antes de agregar los elementos
+                let fileList = document.querySelector("#fileList");
+                fileList.innerHTML = ""; // Limpiar el listado existente
 
+                data.files.forEach((file, index) => {
+                    let button = document.createElement("button");
+                    button.textContent = file.replace('.md', ''); // Remover la extensión .md
+                    button.addEventListener("click", () => {
+                        mostrarContenidoArchivo(file);
+                    });
 
-                archivos.forEach(archivo => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = archivo;
-                    listaArchivos.appendChild(listItem);
+                    let listItem = document.createElement("li");
+                    listItem.textContent = (index + 1) + ". ";
+                    listItem.appendChild(button);
+
+                    fileList.appendChild(listItem);
                 });
-
-
-                const ultimoArchivo = archivos[archivos.length - 1];
-                const ultimoArchivoItem = document.createElement('li');
-                ultimoArchivoItem.textContent = ultimoArchivo;
-                listaArchivos.insertBefore(ultimoArchivoItem, listaArchivos.firstChild);
             } else {
-                console.error('Error al obtener el listado.');
+                console.error("Error al obtener el listado de archivos.");
             }
         });
-}
-
-function sincronizarListado() {
-    setInterval(() => {
-        mostrarListadoArchivos();
-    }, 500); 
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -64,14 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#markupForm').onsubmit = () => {
         guardarArchivo(title.value, content.value);
         return false;
-    };
-
-    function sincronizarListado() {
-        setInterval(() => {
-            mostrarListadoArchivos();
-        }, 500); 
     }
-    
+
     mostrarListadoArchivos();
-    sincronizarListado(); 
 });
