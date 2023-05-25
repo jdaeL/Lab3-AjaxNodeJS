@@ -1,4 +1,4 @@
-function recitar(title, content) {
+function guardarArchivo(title, content) {
     const url = 'http://localhost:3000/';
     const data = {
         title: title,
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const title = document.querySelector('#title');
     const content = document.querySelector('#content');
     document.querySelector('#markupForm').onsubmit = () => {
-        recitar(title.value, content.value);
+        guardarArchivo(title.value, content.value);
         return false;
     };
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     ultimoArchivoItem.textContent = ultimoArchivo;
                     listaArchivos.insertBefore(ultimoArchivoItem, listaArchivos.firstChild);
                 } else {
-                    console.log('Error al obtener el listado de archivos.');
+                    console.log('Error al obtener el listado.');
                 }
             });
     }
